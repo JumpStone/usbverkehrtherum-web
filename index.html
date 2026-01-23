@@ -11,7 +11,15 @@
         --usb-orange: #ff9900;
         --bg: #121212;
         --text: #f0f0f0;
-        --usb-metal: linear-gradient(135deg, #505050, #808080);
+        --usb-body-gradient: linear-gradient(135deg, #444, #222);
+        /* Metallischer Look für den Stecker */
+        --usb-metal: linear-gradient(
+          90deg,
+          #999 0%,
+          #f0f0f0 40%,
+          #e0e0e0 60%,
+          #999 100%
+        );
       }
 
       * {
@@ -63,14 +71,13 @@
       /* Der RIESIGE USB-Stick */
       .usb-monument {
         position: relative;
-        width: min(80vw, 400px);
+        width: min(80vw, 300px); /* Etwas schmaler für bessere Proportionen */
         height: min(60vh, 600px);
         margin: 3rem auto;
         cursor: pointer;
         transform-style: preserve-3d;
-        transition: transform 0.5s;
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncier effect */
         max-width: calc(100vw - 4rem);
-        overflow: hidden;
       }
 
       .usb-monument:hover {
@@ -80,87 +87,98 @@
       .usb-body {
         position: absolute;
         width: 100%;
-        height: 80%;
+        height: 75%;
         bottom: 0;
-        background: var(--usb-metal);
-        border-radius: 10px 10px 0 0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        background: var(--usb-body-gradient);
+        border-radius: 15px 15px 10px 10px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        z-index: 2;
+        border: 1px solid #555;
       }
 
+      /* NEU: Realistischer USB-A Stecker */
       .usb-plug {
         position: absolute;
-        width: 40%;
-        height: 20%;
-        top: 0;
-        left: 30%;
+        width: 50%; /* Breiter, typisch für USB-A */
+        height: 28%; /* Verhältnis angepasst */
+        top: -3%; /* Schiebt ihn etwas aus dem Body raus */
+        left: 25%;
         background: var(--usb-metal);
-        border-radius: 5px 5px 0 0;
-        z-index: 2;
+        border-radius: 4px 4px 0 0;
+        z-index: 1;
+        border: 1px solid #777;
+        box-shadow: inset 2px 0 5px rgba(0, 0, 0, 0.2),
+          inset -2px 0 5px rgba(0, 0, 0, 0.2);
       }
 
-      .usb-hole {
+      /* Die zwei typischen Löcher im Metall */
+      .usb-plug::before,
+      .usb-plug::after {
+        content: "";
         position: absolute;
         width: 20%;
-        height: 50%;
+        height: 25%;
         top: 20%;
-        left: 40%;
-        background: #000;
-        z-index: 1;
+        background-color: #333; /* Dunkles Loch */
+        border-radius: 2px;
+        box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.8);
       }
 
+      .usb-plug::before {
+        left: 20%;
+      }
+
+      .usb-plug::after {
+        right: 20%;
+      }
+
+      /* Das blaue Plastik-Inlay (USB 3.0 Indikator) */
+      .usb-plastic-insert {
+        position: absolute;
+        top: 0;
+        left: 10%;
+        width: 80%;
+        height: 5px;
+        background-color: var(--usb-blue);
+        opacity: 0.8;
+      }
+
+      /* Label auf der Rückseite (bleibt versteckt bis Drehung) */
       .usb-label {
         position: absolute;
-        width: 60%;
+        width: 80%;
         height: 20%;
-        bottom: 10%;
-        left: 20%;
-        background: var(--usb-blue);
+        bottom: 40%;
+        left: 10%;
+        background: var(--usb-orange);
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
         border-radius: 5px;
-        transform: rotateY(180deg);
+        transform: translateZ(-1px) rotateY(180deg); /* Auf die Rückseite schieben */
+        backface-visibility: visible;
         opacity: 0;
-        transition: all 0.3s;
+        transition: opacity 0.3s;
+        z-index: 0;
       }
 
-      .usb-monument:hover .usb-label {
-        transform: rotateY(0);
+      /* Wenn gedreht, zeige Label */
+      .usb-monument.is-rotated .usb-label {
         opacity: 1;
+        z-index: 3;
       }
 
-      /* Interaktive Elemente */
-      .btn {
-        background: var(--usb-orange);
-        color: white;
-        border: none;
-        padding: 0.8rem 1.5rem;
-        margin: 0.5rem;
-        border-radius: 50px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: transform 0.3s, background 0.3s;
-      }
-
-      .btn:hover {
-        background: #ff6600;
-        transform: translateY(-3px);
-      }
-
-      .btn:active {
-        transform: translateY(1px);
-      }
-
+      /* Footer Styles */
       footer {
         margin-top: 3rem;
-        font-size: 1.2rem;
-        opacity: 0.9;
+        font-size: 1rem;
+        opacity: 0.7;
       }
 
       footer a {
-        color: #00aaff;
+        color: var(--usb-blue);
         text-decoration: none;
       }
 
@@ -175,11 +193,12 @@
       <h1>USBVerkehrtherum.de</h1>
       <p class="subtitle">Error 404: Richtige Seite nicht gefunden.</p>
 
-      <!-- Der riesige USB-Stick -->
       <div class="usb-monument" onclick="rotateUSB()">
-        <div class="usb-plug"></div>
+        <div class="usb-plug">
+          <div class="usb-plastic-insert"></div>
+        </div>
+
         <div class="usb-body"></div>
-        <div class="usb-hole"></div>
       </div>
 
       <footer>
@@ -191,15 +210,19 @@
     </div>
 
     <script>
-      // Mini-SPA-Funktionalität
       let rotated = false;
 
       function rotateUSB() {
         const usb = document.querySelector(".usb-monument");
         rotated = !rotated;
-        usb.style.transform = rotated
-          ? "rotateY(180deg) scale(0.9)"
-          : "rotateY(0) scale(1)";
+
+        if (rotated) {
+          usb.classList.add("is-rotated");
+          usb.style.transform = "rotateY(180deg)";
+        } else {
+          usb.classList.remove("is-rotated");
+          usb.style.transform = "rotateY(0)";
+        }
       }
     </script>
   </body>
